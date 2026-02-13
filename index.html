@@ -9,7 +9,67 @@
     <title>Full-Stack App (Student Build)</title>
 </head>
 <body>
+    <div class="navbar">
+        <div class="title">
+            <h2>Full-Stack App</h2>
+        </div>
+        <div class="buttons" id="nav-buttons">
 
+    <div id="guest-links">
+        <a href="#" onclick="loginAsAdmin()">Login</a>
+        <a href="#">Register</a>
+    </div>
+
+    
+    <div id="admin-dropdown" class="dropdown" style="display: none;">
+    <a class="dropdown-toggle text-white text-decoration-none" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Admin
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="#">Profile</a></li>
+        <li><a class="dropdown-item" href="#">My Requests</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#">Employees</a></li>
+        <li><a class="dropdown-item" href="#">Accounts</a></li>
+        <li><a class="dropdown-item" href="#">Departments</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
+    </ul>
+</div>
+
+
+</div>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">My Requests</a></li>
+
+            <li class="role-admin"><hr class="dropdown-divider"></li>
+            <li class="role-admin"><a class="dropdown-item" href="#">Employees</a></li>
+            <li class="role-admin"><a class="dropdown-item" href="#">Accounts</a></li>
+            <li class="role-admin"><a class="dropdown-item" href="#">Departments</a></li>
+
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#" id="logout-btn">Logout</a></li>
+        </ul>
+    </div>
+    </div>
+
+    <div class="below-navbar">
+        <h1>Welcome to Full-Stack App</h1>
+        <p class="below-details">A static prototype before backend integration. Simulates:</p>
+            <ul>
+                <li>Email registration + fake verification</li>
+                <li>Login with JWT-like token simulation</li>
+                <li>Role-based UI (Admin/User)</li>
+                <li>Crud for Employees, Departments, Requests</li>
+            </ul>
+        
+        <div class="note-box">
+            Note: All data is stored in localStorage. Refresh to reset.
+        </div>
+        <button class="get-started-button">Get Started</button>
+    </div>
 
 
     
