@@ -1,0 +1,31 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.navbar {
+    height: 80px;
+    width: 100%;
+    background-color: grey;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title{
+    color:white;
+    margin-left: 15px;
+}
+
+.buttons a {
+    display: flex;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    flex-direction: column;
+    margin-right: 15px;
+}
+
+.buttons a:hover {
+    text-decoration: underline;
+}
