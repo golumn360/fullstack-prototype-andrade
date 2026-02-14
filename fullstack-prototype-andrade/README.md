@@ -1,0 +1,3 @@
+# WELCOME TO MY FULLSTACK PROTOTYPE BY EMMANUEL M. ANDRADE
+
+This project is for school.
