@@ -1,9 +1,20 @@
-function loginAsAdmin() {
-    document.getElementById("guest-links").style.display = "none";
-    document.getElementById("admin-dropdown").style.display = "block";
+const pageLinks = document.querySelectorAll('[data-page]');
+
+const pages = document.querySelectorAll('.page');
+
+function showPage(pageId) {
+  pages.forEach(page => page.classList.remove('active')); 
+  const target = document.getElementById(pageId);
+  if (target) {
+    target.classList.add('active'); 
+  }
 }
 
-function logout() {
-    document.getElementById("admin-dropdown").style.display = "none";
-    document.getElementById("guest-links").style.display = "flex";
-}
+
+pageLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault(); 
+    const page = link.getAttribute('data-page'); 
+    showPage(page);
+  });
+});
