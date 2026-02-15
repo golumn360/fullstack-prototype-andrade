@@ -11,15 +11,15 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#" data-page="home">Full-Stack App</a>
+        <a href="#/" class="navbar-brand">Full-Stack App</a>
         
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" >Login</a>
+                    <a href="#/login" class="nav-link">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-page="register">Register</a>
+                    <a href="#/register" class="nav-link">Register</a>
                 </li>
             </ul>
             </div>
@@ -70,6 +70,45 @@
                 </div>
                 <button type="button" class="btn btn-success">Sign Up</button>
                 <button type="button" class="btn btn-outline-dark">Cancel</button>
+            </div>
+        </section>
+
+        <section id="verify-email" class="page">
+            <div class="register-page">
+                <h2>Verify your Email</h2>
+                <h3>For demo purposes, click below to simulate verification:</h3>
+                <div class="alert alert-primary" role="alert">
+                    A verification link has been sent to.
+                </div>
+                <button type="button" class="btn btn-success" id="verify-btn">Simulate Email Verification</button>
+            </div>
+        </section>
+
+        <section id="login" class="page">
+            <div class="login-page">
+                <h2>Login</h2>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Email Address">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+                    <div class="login-button">
+                        <button type="button" class="btn btn-primary">Login</button>
+                        <button type="button" class="btn btn-outline-dark">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="profile" class="">
+            <div class="profile-page">
+                <h2>My Profile</h2>
+                <div class="profile-box">
+                    <h3>Admin User</h3>
+                    <p>Email:<br>
+                        Role:<br>
+                    <button type="button" class="btn btn-outline-primary">Edit Profile</button>                  </p>
+                </div>
             </div>
         </section>
     </main>    
