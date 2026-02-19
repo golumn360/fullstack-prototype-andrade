@@ -1,103 +1,72 @@
-window.db = JSON.parse(localStorage.getItem("db")) || {
-  accounts: []
-};
+let currentUser = null;
 
-function saveToStorage() {
-  localStorage.setItem("db", JSON.stringify(window.db));
+function navigateTo(hash) {
+    window.location.hash = hash;
 }
 
-
-const pages = document.querySelectorAll('.page');
-
 function handleRouting() {
-  let hash = window.location.hash;
 
-  if (!hash) {
-    hash = "#/";
-  }
+    let hash = window.location.hash;
 
-  const route = hash.replace("#/", "");
-
-  pages.forEach(page => page.classList.remove("active"));
-
-  if (route === "") {
-    document.getElementById("home").classList.add("active");
-  } else {
-    const target = document.getElementById(route);
-    if (target) {
-      target.classList.add("active");
-    } else {
-      document.getElementById("home").classList.add("active");
+    if (!hash || hash === "#") {
+        hash = "#/";
+        window.location.hash = hash;
     }
-  }
+
+    const route = hash.replace("#/", "");
+
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
+
+    const protectedRoutes = [
+        "profile",
+        "requests-user"
+    ];
+
+    const adminRoutes = [
+        "employees-admin",
+        "departments-admin",
+        "accounts-admin"
+    ];
+
+    if (protectedRoutes.includes(route) && !currentUser) {
+        navigateTo("#/login");
+        return;
+    }
+
+    if (adminRoutes.includes(route)) {
+
+        if (!currentUser) {
+            navigateTo("#/login");
+            return;
+        }
+
+        if (currentUser.role !== "Admin") {
+            navigateTo("#/");
+            return;
+        }
+    }
+
+
+    let pageId = route === "" ? "home" : route;
+
+    const page = document.getElementById(pageId);
+
+    if (page) {
+        page.classList.add("active");
+    } else {
+        document.getElementById("home").classList.add("active");
+    }
 }
 
 window.addEventListener("hashchange", handleRouting);
-window.addEventListener("load", handleRouting);
 
-document.querySelector(".btn-success").addEventListener("click", function () {
+window.addEventListener("load", () => {
 
-  const firstName = document.getElementById("first-name").value.trim();
-  const lastName = document.getElementById("last-name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if (!firstName || !lastName || !email || password.length < 6) {
-    alert("Please fill all fields. Password must be at least 6 characters.");
-    return;
-  }
-
-  // Check if email already exists
-  const emailExists = window.db.accounts.find(acc => acc.email === email);
-
-  if (emailExists) {
-    alert("Email already registered.");
-    return;
-  }
-
-  // Create account
-  const newAccount = {
-    id: Date.now(),
-    firstName,
-    lastName,
-    email,
-    password,
-    verified: false,
-    role: "user"
-  };
-
-  window.db.accounts.push(newAccount);
-  saveToStorage();
-
-  // Store unverified email
-  localStorage.setItem("unverified_email", email);
-
-  // Redirect
-  location.hash = "#/verify-email";
-});
-
-document.addEventListener("click", function (e) {
-
-  if (e.target.id === "verify-btn") {
-
-    const email = localStorage.getItem("unverified_email");
-
-    const targetAccount = window.db.accounts.find(acc => acc.email === email);
-
-    if (!targetAccount) {
-      alert("No account found.");
-      return;
+    if (!window.location.hash) {
+        window.location.hash = "#/";
     }
 
-    targetAccount.verified = true;
-
-    saveToStorage();
-
-    localStorage.removeItem("unverified_email");
-
-    alert("Email Verified! Please Login.");
-
-    location.hash = "#/login";
-  }
-
+    handleRouting();
 });

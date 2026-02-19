@@ -8,20 +8,40 @@
     <link rel="stylesheet" href="style.css">
     <title>Full-Stack App (Student Build)</title>
 </head>
-<body>
+<body class="not-authenticated">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a href="#/" class="navbar-brand">Full-Stack App</a>
         
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a href="#/login" class="nav-link">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#/register" class="nav-link">Register</a>
-                </li>
-            </ul>
+
+    <li class="nav-item role-logged-out">
+        <a href="#/login" class="nav-link">Login</a>
+    </li>
+    <li class="nav-item role-logged-out">
+        <a href="#/register" class="nav-link">Register</a>
+    </li>
+
+    <li class="nav-item role-logged-in">
+        <a href="#/profile" class="nav-link">Profile</a>
+    </li>
+
+    <li class="nav-item role-admin">
+        <a href="#/employees-admin" class="nav-link">Employees</a>
+    </li>
+    <li class="nav-item role-admin">
+        <a href="#/departments-admin" class="nav-link">Departments</a>
+    </li>
+    <li class="nav-item role-admin">
+        <a href="#/accounts-admin" class="nav-link">Accounts</a>
+    </li>
+
+    <li class="nav-item role-logged-in">
+        <a href="#" class="nav-link" id="logout-link">Logout</a>
+    </li>
+
+</ul>
             </div>
         </div>
     </nav>
@@ -100,7 +120,7 @@
             </div>
         </section>
 
-        <section id="profile" class="">
+        <section id="profile" class="page role-logged-in">
             <div class="profile-page">
                 <h2>My Profile</h2>
                 <div class="profile-box">
@@ -112,15 +132,13 @@
             </div>
         </section>
 
-        <section id="employees-admin">
+        <section id="employees-admin" class="page role-admin">
     <div class="employee-page">
-        <!-- Header Row -->
         <div class="header-row">
             <h2>Employees</h2>
             <button type="button" class="btn btn-success" id="employee-btn">+ Add Employee</button>
         </div>
 
-        <!-- Employee Table -->
         <table class="table table-striped mt-3">
             <thead>
                 <tr>
@@ -138,7 +156,6 @@
             </tbody>
         </table>
 
-        <!-- Add/Edit Employee Form -->
         <div class="card mt-4">
             <div class="card-header">
                 Add/Edit Employee
@@ -173,7 +190,7 @@
     </div>
 </section>
    
-    <section id="departments-admin" class="">
+    <section id="departments-admin" class="page role-admin">
     <div class="department-page">
         <div class="header-row">
             <h2>Departments</h2>
@@ -211,7 +228,7 @@
 </section>
 
 
-<section id="accounts-admin" class="">
+<section id="accounts-admin" class="page role-admin">
     <div class="account-page">
         <div class="header-row">
             <h2>Accounts</h2>
@@ -284,7 +301,7 @@
     </div>
 </section>
 
-<section id="requests-user" class="">
+<section id="requests-user" class="page role-logged-in">
     <div class="employee-page">
         <div class="header-row">
             <h2>My Requests</h2>
