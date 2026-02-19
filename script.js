@@ -201,3 +201,53 @@ window.addEventListener("load", () => {
     setupAdminForms();
     handleRouting();
 });
+
+function renderProfile() {
+    if (!currentUser) return;
+
+    const profileSection = document.getElementById("profile");
+    const profileBox = profileSection.querySelector(".profile-box");
+
+    profileBox.innerHTML = `
+        <h3>${currentUser.firstName} ${currentUser.lastName}</h3>
+        <p>
+            <strong>Email:</strong> ${currentUser.email}<br>
+            <strong>Role:</strong> ${currentUser.role}
+        </p>
+        <button type="button" class="btn btn-outline-primary" id="edit-profile-btn">Edit Profile</button>
+    `;
+
+    const editBtn = document.getElementById("edit-profile-btn");
+    editBtn.addEventListener("click", () => {
+        alert("Edit Profile clicked! (Functionality coming soon)");
+    });
+}
+
+function handleRouting() {  
+    let hash = window.location.hash;
+    if (!hash || hash === "#") hash = "#/";
+    const route = hash.replace("#/", "");
+
+    document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+
+    const protectedRoutes = ["profile", "requests-user"];
+    const adminRoutes = ["employees-admin", "departments-admin", "accounts-admin"];
+
+    if (protectedRoutes.includes(route) && !currentUser) {
+        navigateTo("#/login");
+        return;
+    }
+    if (adminRoutes.includes(route)) {
+        if (!currentUser) { navigateTo("#/login"); return; }
+        if (currentUser.role !== "Admin") { navigateTo("#/"); return; }
+    }
+
+    const pageId = route === "" ? "home" : route;
+    const page = document.getElementById(pageId);
+    if (page) page.classList.add("active");
+    else document.getElementById("home").classList.add("active");
+
+    if (route === "profile") renderProfile();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
