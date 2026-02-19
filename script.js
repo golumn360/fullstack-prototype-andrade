@@ -467,17 +467,49 @@ function updateNavbarUser() {
         usernameSpan.textContent = currentUser.firstName;
         document.body.classList.remove("is-admin");
     }
-}
 
-function setupLogout() {
-    const logoutLinks = document.querySelectorAll("#dropdown-logout");
-    logoutLinks.forEach(link => {
-        link.addEventListener("click", (e) => {
-            e.preventDefault();
-            localStorage.removeItem("auth_token");
-            setAuthState(false);
-            navigateTo("#/");
-        });
+    document.querySelectorAll(".role-admin").forEach(el => {
+        el.style.display = currentUser?.role === "Admin" ? "block" : "none";
     });
 }
 
+function setupLogout() {
+    const logoutLink = document.getElementById("dropdown-logout"); 
+    if (!logoutLink) return;
+
+    logoutLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("auth_token");
+        setAuthState(false);
+        updateNavbarUser();
+        navigateTo("#/");
+    });
+}
+
+function setupLogin() {
+    const loginBtn = document.querySelector("#login .btn-primary");
+    loginBtn.addEventListener("click", () => {
+        const section = document.getElementById("login");
+        const email = section.querySelector("#email").value.trim();
+        const password = section.querySelector("#password").value.trim();
+
+        const user = window.db.accounts.find(acc => acc.email === email && acc.password === password && acc.verified === true);
+
+        if (!user) { alert("Invalid credentials or email not verified."); return; }
+
+        localStorage.setItem("auth_token", user.email);
+        setAuthState(true, user);
+        updateNavbarUser(); 
+        navigateTo("#/profile");
+    });
+}
+
+function autoLogin() {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+    const user = window.db.accounts.find(acc => acc.email === token);
+    if (user) {
+        setAuthState(true, user);
+        updateNavbarUser(); 
+    }
+}
