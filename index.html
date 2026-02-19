@@ -10,41 +10,38 @@
 </head>
 <body class="not-authenticated">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a href="#/" class="navbar-brand">Full-Stack App</a>
-        
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+  <div class="container-fluid">
+    <a href="#/" class="navbar-brand">Full-Stack App</a>
 
-    <li class="nav-item role-logged-out">
-        <a href="#/login" class="nav-link">Login</a>
-    </li>
-    <li class="nav-item role-logged-out">
-        <a href="#/register" class="nav-link">Register</a>
-    </li>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
-    <li class="nav-item role-logged-in">
-        <a href="#/profile" class="nav-link">Profile</a>
-    </li>
+        <li class="nav-item role-logged-out">
+          <a href="#/login" class="nav-link">Login</a>
+        </li>
+        <li class="nav-item role-logged-out">
+          <a href="#/register" class="nav-link">Register</a>
+        </li>
 
-    <li class="nav-item role-admin">
-        <a href="#/employees-admin" class="nav-link">Employees</a>
-    </li>
-    <li class="nav-item role-admin">
-        <a href="#/departments-admin" class="nav-link">Departments</a>
-    </li>
-    <li class="nav-item role-admin">
-        <a href="#/accounts-admin" class="nav-link">Accounts</a>
-    </li>
+        <li class="nav-item dropdown role-logged-in">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span id="nav-username">User</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li class="role-admin"><a class="dropdown-item" href="#/employees-admin">Employees</a></li>
+            <li class="role-admin"><a class="dropdown-item" href="#/departments-admin">Departments</a></li>
+            <li class="role-admin"><a class="dropdown-item" href="#/accounts-admin">Accounts</a></li>
+            <li><a class="dropdown-item" href="#/profile">Profile</a></li>
+            <li><a class="dropdown-item" href="#/requests-user">My Requests</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" id="dropdown-logout">Logout</a></li>
+          </ul>
+        </li>
 
-    <li class="nav-item role-logged-in">
-        <a href="#" class="nav-link" id="logout-link">Logout</a>
-    </li>
-
-</ul>
-            </div>
-        </div>
-    </nav>
+      </ul>
+    </div>
+  </div>
+</nav>
     
     <main>
         <section id="home" class="page active">
