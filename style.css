@@ -106,5 +106,30 @@ body.is-admin .role-admin { display: block; }
 .profile-box {
     padding: 50px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    margin: 10px;
+    margin-right: 40px;
+}
+
+.profile-page {
+    margin-left: 40px;
+}
+
+.employee-page {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    margin: 40px;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+.department-page {
+    margin: 40px;
+}
+
+.account-page {
+    margin: 40px;
 }

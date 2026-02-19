@@ -1,4 +1,3 @@
-// Initialize database
 window.db = JSON.parse(localStorage.getItem("db")) || {
   accounts: []
 };
