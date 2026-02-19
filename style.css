@@ -3,6 +3,19 @@ body {
     margin: 0;
 }
 
+.page { display: none; }
+
+.page.active { display: block; }
+
+body.not-authenticated .role-logged-in { display: none; }
+
+body.authenticated .role-logged-out { display: none; }
+
+.role-admin { display: none; }
+
+body.is-admin .role-admin { display: block; }
+
+
 .navbar {
     background-color: black !important;
 }
@@ -35,10 +48,6 @@ body {
     max-width: 400px;   
     margin-left: 15px;  
     margin-top: 40px;    
-}
-
-.page {
-    display: none;
 }
 
 .page.active {
