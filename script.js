@@ -37,19 +37,16 @@ function handleRouting() {
     if (!hash || hash === "#") hash = "#/";
     const route = hash.replace("#/", "");
 
-    // -------- Hide admin cards first --------
     const adminCards = document.querySelectorAll(
         "#employees-admin .card, #departments-admin .card, #accounts-admin .card"
     );
     adminCards.forEach(c => c.style.display = "none");
 
-    // Hide all pages
     document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
 
     const protectedRoutes = ["profile", "requests-user"];
     const adminRoutes = ["employees-admin", "departments-admin", "accounts-admin"];
 
-    // Protect routes
     if (protectedRoutes.includes(route) && !currentUser) {
         navigateTo("#/login");
         return;
@@ -59,13 +56,11 @@ function handleRouting() {
         if (currentUser.role !== "Admin") { navigateTo("#/"); return; }
     }
 
-    // Activate the correct page
     const pageId = route === "" ? "home" : route;
     const page = document.getElementById(pageId);
     if (page) page.classList.add("active");
     else document.getElementById("home").classList.add("active");
 
-    // -------- Scroll to top AFTER page activation --------
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -84,7 +79,6 @@ function setAuthState(isAuth, user = null) {
     handleRouting();
 }
 
-// --------------------- Registration ---------------------
 function setupRegistration() {
     const registerBtn = document.querySelector("#register .btn-success");
     registerBtn.addEventListener("click", () => {
@@ -111,7 +105,6 @@ function setupRegistration() {
     });
 }
 
-// --------------------- Email Verification ---------------------
 function setupVerification() {
     const verifyBtn = document.getElementById("verify-btn");
     verifyBtn.addEventListener("click", () => {
@@ -130,7 +123,6 @@ function setupVerification() {
     });
 }
 
-// --------------------- Login ---------------------
 function setupLogin() {
     const loginBtn = document.querySelector("#login .btn-primary");
     loginBtn.addEventListener("click", () => {
@@ -148,7 +140,6 @@ function setupLogin() {
     });
 }
 
-// --------------------- Logout ---------------------
 function setupLogout() {
     const logoutLink = document.getElementById("logout-link");
     logoutLink.addEventListener("click", (e) => {
@@ -159,7 +150,6 @@ function setupLogout() {
     });
 }
 
-// --------------------- Auto Login ---------------------
 function autoLogin() {
     const token = localStorage.getItem("auth_token");
     if (!token) return;
@@ -167,13 +157,10 @@ function autoLogin() {
     if (user) setAuthState(true, user);
 }
 
-// --------------------- Admin Forms Toggle ---------------------
 function setupAdminForms() {
-    // Hide all cards initially
     const cards = document.querySelectorAll(".card");
     cards.forEach(c => c.style.display = "none");
 
-    // Employees toggle
     const empBtn = document.getElementById("employee-btn");
     const empCard = document.querySelector("#employees-admin .card");
     if (empBtn && empCard) {
@@ -183,7 +170,6 @@ function setupAdminForms() {
         });
     }
 
-    // Departments toggle
     const deptBtn = document.querySelector("#departments-admin .btn-success");
     const deptCard = document.querySelector("#departments-admin .card");
     if (deptBtn && deptCard) {
@@ -193,7 +179,6 @@ function setupAdminForms() {
         });
     }
 
-    // Accounts toggle
     const accBtn = document.querySelector("#accounts-admin .btn-success");
     const accCard = document.querySelector("#accounts-admin .card");
     if (accBtn && accCard) {
@@ -204,7 +189,6 @@ function setupAdminForms() {
     }
 }
 
-// --------------------- Init ---------------------
 window.addEventListener("hashchange", handleRouting);
 window.addEventListener("load", () => {
     loadFromStorage();
