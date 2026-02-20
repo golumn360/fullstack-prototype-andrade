@@ -32,39 +32,6 @@ function navigateTo(hash) {
     window.location.hash = hash;
 }
 
-function handleRouting() {
-    let hash = window.location.hash;
-    if (!hash || hash === "#") hash = "#/";
-    const route = hash.replace("#/", "");
-
-    const adminCards = document.querySelectorAll(
-        "#employees-admin .card, #departments-admin .card, #accounts-admin .card"
-    );
-    adminCards.forEach(c => c.style.display = "none");
-
-    document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-
-    const protectedRoutes = ["profile", "requests-user"];
-    const adminRoutes = ["employees-admin", "departments-admin", "accounts-admin"];
-
-    if (protectedRoutes.includes(route) && !currentUser) {
-        navigateTo("#/login");
-        return;
-    }
-    if (adminRoutes.includes(route)) {
-        if (!currentUser) { navigateTo("#/login"); return; }
-        if (currentUser.role !== "Admin") { navigateTo("#/"); return; }
-    }
-
-    const pageId = route === "" ? "home" : route;
-    const page = document.getElementById(pageId);
-    if (page) page.classList.add("active");
-    else document.getElementById("home").classList.add("active");
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-
 function setAuthState(isAuth, user = null) {
     if (isAuth && user) {
         currentUser = user;
@@ -123,40 +90,6 @@ function setupVerification() {
     });
 }
 
-function setupLogin() {
-    const loginBtn = document.querySelector("#login .btn-primary");
-    loginBtn.addEventListener("click", () => {
-        const section = document.getElementById("login");
-        const email = section.querySelector("#email").value.trim();
-        const password = section.querySelector("#password").value.trim();
-
-        const user = window.db.accounts.find(acc => acc.email === email && acc.password === password && acc.verified === true);
-
-        if (!user) { alert("Invalid credentials or email not verified."); return; }
-
-        localStorage.setItem("auth_token", user.email);
-        setAuthState(true, user);
-        navigateTo("#/profile");
-    });
-}
-
-function setupLogout() {
-    const logoutLink = document.getElementById("logout-link");
-    logoutLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        localStorage.removeItem("auth_token");
-        setAuthState(false);
-        navigateTo("#/");
-    });
-}
-
-function autoLogin() {
-    const token = localStorage.getItem("auth_token");
-    if (!token) return;
-    const user = window.db.accounts.find(acc => acc.email === token);
-    if (user) setAuthState(true, user);
-}
-
 function setupAdminForms() {
     const cards = document.querySelectorAll(".card");
     cards.forEach(c => c.style.display = "none");
@@ -188,19 +121,6 @@ function setupAdminForms() {
         });
     }
 }
-
-window.addEventListener("hashchange", handleRouting);
-window.addEventListener("load", () => {
-    loadFromStorage();
-    if (!window.location.hash) window.location.hash = "#/";
-    setupRegistration();
-    setupVerification();
-    setupLogin();
-    setupLogout();
-    autoLogin();
-    setupAdminForms();
-    handleRouting();
-});
 
 function renderProfile() {
     if (!currentUser) return;
@@ -248,6 +168,7 @@ function handleRouting() {
     else document.getElementById("home").classList.add("active");
 
     if (route === "profile") renderProfile();
+    if (route === "requests-user") renderUserRequests();
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -448,12 +369,27 @@ function setupEmployeeForm() {
 }
 
 window.addEventListener("load", () => {
+
+    loadFromStorage();
+
+    setupRegistration();
+    setupVerification();
+    setupLogin();
+    setupLogout();
+    autoLogin();
+
+    window.addEventListener("hashchange", handleRouting);
+    handleRouting();
+
     renderAccountsList();
     setupAccountForm();
     renderDepartmentsTable();
     setupDepartmentAdd();
     renderEmployeesTable();
     setupEmployeeForm();
+
+    setupRequests();
+
 });
 
 function updateNavbarUser() {
@@ -512,4 +448,126 @@ function autoLogin() {
         setAuthState(true, user);
         updateNavbarUser(); 
     }
+}
+
+function renderUserRequests() {
+    if (!currentUser) return;
+
+    const tbody = document.getElementById("requests-table-body");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    const myRequests = window.db.requests.filter(
+        r => r.employeeEmail === currentUser.email
+    );
+
+    if (!myRequests.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center">No requests yet.</td>
+            </tr>
+        `;
+        return;
+    }
+
+    myRequests.forEach(req => {
+        const tr = document.createElement("tr");
+
+        const itemsText = req.items
+            .map(i => `${i.name} (x${i.qty})`)
+            .join(", ");
+
+        let badgeClass = "bg-warning";
+        if (req.status === "Approved") badgeClass = "bg-success";
+        if (req.status === "Rejected") badgeClass = "bg-danger";
+
+        tr.innerHTML = `
+            <td>${req.date}</td>
+            <td>${req.type}</td>
+            <td>${itemsText}</td>
+            <td><span class="badge ${badgeClass}">${req.status}</span></td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+function createItemRow(name = "", qty = 1) {
+    const div = document.createElement("div");
+    div.className = "input-group mb-2";
+
+    div.innerHTML = `
+        <input type="text" class="form-control item-name" placeholder="Item name" value="${name}">
+        <input type="number" class="form-control item-qty" value="${qty}" min="1" style="max-width:80px;">
+        <button class="btn btn-outline-danger remove-item" type="button">×</button>
+    `;
+
+    div.querySelector(".remove-item").addEventListener("click", () => {
+        div.remove();
+    });
+
+    return div;
+}
+
+function setupRequests() {
+
+    const itemsContainer = document.getElementById("items-container");
+    const addItemBtn = document.getElementById("add-item-btn");
+    const submitBtn = document.getElementById("submit-request");
+
+    if (!itemsContainer) return;
+
+    function resetItems() {
+        itemsContainer.innerHTML = "";
+        itemsContainer.appendChild(createItemRow());
+    }
+
+    resetItems();
+
+    addItemBtn.addEventListener("click", () => {
+        itemsContainer.appendChild(createItemRow());
+    });
+
+    submitBtn.addEventListener("click", () => {
+
+        const type = document.getElementById("request-type").value;
+
+        const itemNames = document.querySelectorAll(".item-name");
+        const itemQtys = document.querySelectorAll(".item-qty");
+
+        let items = [];
+
+        for (let i = 0; i < itemNames.length; i++) {
+            const name = itemNames[i].value.trim();
+            const qty = parseInt(itemQtys[i].value);
+
+            if (name && qty > 0) {
+                items.push({ name, qty });
+            }
+        }
+
+        if (!items.length) {
+            alert("Please add at least one valid item.");
+            return;
+        }
+
+        const newRequest = {
+            type,
+            items,
+            status: "Pending",
+            date: new Date().toLocaleDateString(),
+            employeeEmail: currentUser.email
+        };
+
+        window.db.requests.push(newRequest);
+        saveToStorage();
+
+        renderUserRequests();
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById("newRequestModal"));
+        modal.hide();
+
+        resetItems();
+    });
 }
