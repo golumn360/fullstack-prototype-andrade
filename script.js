@@ -1,6 +1,91 @@
 const STORAGE_KEY = "ipt_demo_v1";
 let currentUser = null;
 
+function showToast(message, type = "info") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toastId = "toast-" + Date.now();
+  const iconMap = {
+    success: "✓",
+    error: "✕",
+    warning: "⚠",
+    info: "ℹ",
+  };
+  const bgColorMap = {
+    success: "bg-success",
+    error: "bg-danger",
+    warning: "bg-warning",
+    info: "bg-info",
+  };
+
+  const toastEl = document.createElement("div");
+  toastEl.className = `toast show`;
+  toastEl.id = toastId;
+  toastEl.setAttribute("role", "alert");
+  toastEl.innerHTML = `
+    <div class="toast-header ${bgColorMap[type] || "bg-info"} text-white">
+      <strong class="me-auto">${iconMap[type] || "ℹ"} ${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">${message}</div>
+  `;
+
+  container.appendChild(toastEl);
+
+  setTimeout(() => {
+    toastEl.classList.remove("show");
+    setTimeout(() => toastEl.remove(), 300);
+  }, 4000);
+
+  toastEl.querySelector(".btn-close").addEventListener("click", () => {
+    toastEl.classList.remove("show");
+    setTimeout(() => toastEl.remove(), 300);
+  });
+}
+
+function setLoading(button, isLoading) {
+  if (!button) return;
+  if (isLoading) {
+    button.disabled = true;
+    button.dataset.originalText = button.innerHTML;
+    button.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Loading...`;
+  } else {
+    button.disabled = false;
+    button.innerHTML = button.dataset.originalText || button.innerHTML;
+  }
+}
+
+function showFieldError(input, message) {
+  if (!input) return;
+  input.classList.add("is-invalid");
+  input.classList.remove("is-valid");
+
+  let feedback = input.parentElement.querySelector(".invalid-feedback");
+  if (!feedback) {
+    feedback = document.createElement("div");
+    feedback.className = "invalid-feedback";
+    input.parentElement.appendChild(feedback);
+  }
+  feedback.textContent = message;
+}
+
+function showFieldSuccess(input) {
+  if (!input) return;
+  input.classList.remove("is-invalid");
+  input.classList.add("is-valid");
+}
+
+function clearFieldValidation(input) {
+  if (!input) return;
+  input.classList.remove("is-invalid", "is-valid");
+}
+
+function clearFormValidation(form) {
+  if (!form) return;
+  form.querySelectorAll(".is-invalid, .is-valid").forEach(clearFieldValidation);
+}
+
 function loadFromStorage() {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
@@ -57,32 +142,85 @@ function setupRegistration() {
   const registerBtn = document.querySelector("#register .btn-success");
   registerBtn.addEventListener("click", () => {
     const section = document.getElementById("register");
-    const firstName = section.querySelector("#first-name").value.trim();
-    const lastName = section.querySelector("#last-name").value.trim();
-    const email = section.querySelector("#email").value.trim();
-    const password = section.querySelector("#password").value.trim();
+    const firstNameInput = section.querySelector("#first-name");
+    const lastNameInput = section.querySelector("#last-name");
+    const emailInput = section.querySelector("#email");
+    const passwordInput = section.querySelector("#password");
 
-    if (!firstName || !lastName || !email || password.length < 6) {
-      alert("Please fill all fields. Password must be at least 6 characters.");
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    clearFormValidation(section);
+
+    let hasError = false;
+
+    if (!firstName) {
+      showFieldError(firstNameInput, "First name is required.");
+      hasError = true;
+    } else {
+      showFieldSuccess(firstNameInput);
+    }
+
+    if (!lastName) {
+      showFieldError(lastNameInput, "Last name is required.");
+      hasError = true;
+    } else {
+      showFieldSuccess(lastNameInput);
+    }
+
+    if (!email) {
+      showFieldError(emailInput, "Email is required.");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showFieldError(emailInput, "Please enter a valid email address.");
+      hasError = true;
+    } else {
+      showFieldSuccess(emailInput);
+    }
+
+    if (!password) {
+      showFieldError(passwordInput, "Password is required.");
+      hasError = true;
+    } else if (password.length < 6) {
+      showFieldError(passwordInput, "Password must be at least 6 characters.");
+      hasError = true;
+    } else {
+      showFieldSuccess(passwordInput);
+    }
+
+    if (hasError) {
+      showToast("Please fix the errors in the form.", "error");
       return;
     }
 
     if (window.db.accounts.find((acc) => acc.email === email)) {
-      alert("Email already registered.");
+      showFieldError(emailInput, "This email is already registered.");
+      showToast("Email already registered.", "error");
       return;
     }
 
-    window.db.accounts.push({
-      firstName,
-      lastName,
-      email,
-      password,
-      role: "User",
-      verified: false,
-    });
-    saveToStorage();
-    localStorage.setItem("unverified_email", email);
-    navigateTo("#/verify-email");
+    setLoading(registerBtn, true);
+
+    setTimeout(() => {
+      window.db.accounts.push({
+        firstName,
+        lastName,
+        email,
+        password,
+        role: "User",
+        verified: false,
+      });
+      saveToStorage();
+      localStorage.setItem("unverified_email", email);
+      setLoading(registerBtn, false);
+      showToast(
+        "Registration successful! Please verify your email.",
+        "success",
+      );
+      navigateTo("#/verify-email");
+    }, 800);
   });
 }
 
@@ -91,19 +229,25 @@ function setupVerification() {
   verifyBtn.addEventListener("click", () => {
     const email = localStorage.getItem("unverified_email");
     if (!email) {
+      showToast("No pending verification found.", "warning");
       navigateTo("#/login");
       return;
     }
 
-    const account = window.db.accounts.find((acc) => acc.email === email);
-    if (account) {
-      account.verified = true;
-      saveToStorage();
-    }
+    setLoading(verifyBtn, true);
 
-    localStorage.removeItem("unverified_email");
-    alert("Email verified successfully!");
-    navigateTo("#/login");
+    setTimeout(() => {
+      const account = window.db.accounts.find((acc) => acc.email === email);
+      if (account) {
+        account.verified = true;
+        saveToStorage();
+      }
+
+      localStorage.removeItem("unverified_email");
+      setLoading(verifyBtn, false);
+      showToast("Email verified successfully! You can now login.", "success");
+      navigateTo("#/login");
+    }, 1000);
   });
 }
 
@@ -159,7 +303,7 @@ function renderProfile() {
 
   const editBtn = document.getElementById("edit-profile-btn");
   editBtn.addEventListener("click", () => {
-    alert("Edit Profile clicked! (Functionality coming soon)");
+    showToast("Edit Profile feature coming soon!", "info");
   });
 }
 
@@ -236,13 +380,14 @@ function renderAccountsList() {
       form.querySelector("select").value = acc.role;
       form.querySelector("#verified").checked = acc.verified;
       form.dataset.editIdx = idx;
+      showToast("Editing account: " + acc.email, "info");
     });
   });
   document.querySelectorAll(".reset-pw").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const idx = e.target.dataset.idx;
       if (window.db.accounts[idx].email === currentUser.email) {
-        alert("Cannot reset your own password here.");
+        showToast("Cannot reset your own password here.", "warning");
         return;
       }
       let pw = prompt("Enter new password (min 6 chars):");
@@ -250,21 +395,24 @@ function renderAccountsList() {
         window.db.accounts[idx].password = pw;
         saveToStorage();
         renderAccountsList();
-        alert("Password updated.");
-      } else alert("Invalid password.");
+        showToast("Password updated successfully!", "success");
+      } else if (pw) {
+        showToast("Password must be at least 6 characters.", "error");
+      }
     });
   });
   document.querySelectorAll(".delete-acc").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const idx = e.target.dataset.idx;
       if (window.db.accounts[idx].email === currentUser.email) {
-        alert("Cannot delete yourself.");
+        showToast("Cannot delete yourself.", "warning");
         return;
       }
       if (confirm("Are you sure you want to delete this account?")) {
         window.db.accounts.splice(idx, 1);
         saveToStorage();
         renderAccountsList();
+        showToast("Account deleted successfully!", "success");
       }
     });
   });
@@ -274,46 +422,88 @@ function setupAccountForm() {
   const form = document.getElementById("account-form");
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const firstName = form
-      .querySelector("input[placeholder='First Name']")
-      .value.trim();
-    const lastName = form
-      .querySelector("input[placeholder='Last Name']")
-      .value.trim();
-    const email = form.querySelector("input[placeholder='Email']").value.trim();
-    const password = form
-      .querySelector("input[placeholder='Password']")
-      .value.trim();
+    const firstNameInput = form.querySelector(
+      "input[placeholder='First Name']",
+    );
+    const lastNameInput = form.querySelector("input[placeholder='Last Name']");
+    const emailInput = form.querySelector("input[placeholder='Email']");
+    const passwordInput = form.querySelector("input[placeholder='Password']");
+
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
     const role = form.querySelector("select").value;
     const verified = form.querySelector("#verified").checked;
-    if (!firstName || !lastName || !email || password.length < 6) {
-      alert("Fill all fields and ensure password ≥6 chars.");
+
+    clearFormValidation(form);
+
+    let hasError = false;
+
+    if (!firstName) {
+      showFieldError(firstNameInput, "First name is required.");
+      hasError = true;
+    }
+
+    if (!lastName) {
+      showFieldError(lastNameInput, "Last name is required.");
+      hasError = true;
+    }
+
+    if (!email) {
+      showFieldError(emailInput, "Email is required.");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showFieldError(emailInput, "Please enter a valid email address.");
+      hasError = true;
+    }
+
+    if (!password) {
+      showFieldError(passwordInput, "Password is required.");
+      hasError = true;
+    } else if (password.length < 6) {
+      showFieldError(passwordInput, "Password must be at least 6 characters.");
+      hasError = true;
+    }
+
+    if (hasError) {
+      showToast("Please fix the errors in the form.", "error");
       return;
     }
-    const editIdx = form.dataset.editIdx;
-    if (editIdx !== undefined) {
-      window.db.accounts[editIdx] = {
-        firstName,
-        lastName,
-        email,
-        password,
-        role,
-        verified,
-      };
-      delete form.dataset.editIdx;
-    } else {
-      window.db.accounts.push({
-        firstName,
-        lastName,
-        email,
-        password,
-        role,
-        verified,
-      });
-    }
-    saveToStorage();
-    renderAccountsList();
-    form.reset();
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    setLoading(submitBtn, true);
+
+    setTimeout(() => {
+      const editIdx = form.dataset.editIdx;
+      if (editIdx !== undefined) {
+        window.db.accounts[editIdx] = {
+          firstName,
+          lastName,
+          email,
+          password,
+          role,
+          verified,
+        };
+        delete form.dataset.editIdx;
+        showToast("Account updated successfully!", "success");
+      } else {
+        window.db.accounts.push({
+          firstName,
+          lastName,
+          email,
+          password,
+          role,
+          verified,
+        });
+        showToast("Account created successfully!", "success");
+      }
+      saveToStorage();
+      renderAccountsList();
+      form.reset();
+      clearFormValidation(form);
+      setLoading(submitBtn, false);
+    }, 500);
   });
 }
 
@@ -337,7 +527,7 @@ function renderDepartmentsTable() {
 function setupDepartmentAdd() {
   const btn = document.querySelector("#departments-admin .btn-success");
   btn.addEventListener("click", () => {
-    alert("Add Department not implemented.");
+    showToast("Add Department feature coming soon!", "info");
   });
 }
 
@@ -379,6 +569,7 @@ function renderEmployeesTable() {
       form.querySelector("#department").value = emp.department;
       form.querySelector("#hire-date").value = emp.hireDate;
       form.dataset.editIdx = idx;
+      showToast("Editing employee: " + emp.id, "info");
     });
   });
   document.querySelectorAll(".delete-emp").forEach((btn) => {
@@ -388,6 +579,7 @@ function renderEmployeesTable() {
         window.db.employees.splice(idx, 1);
         saveToStorage();
         renderEmployeesTable();
+        showToast("Employee deleted successfully!", "success");
       }
     });
   });
@@ -397,44 +589,93 @@ function setupEmployeeForm() {
   const form = document.getElementById("employee-form");
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const id = form.querySelector("#employee-id").value.trim();
-    const userEmail = form.querySelector("#user-email").value.trim();
-    const position = form.querySelector("#position").value.trim();
-    const department = form.querySelector("#department").value.trim();
-    const hireDate = form.querySelector("#hire-date").value;
+    const idInput = form.querySelector("#employee-id");
+    const userEmailInput = form.querySelector("#user-email");
+    const positionInput = form.querySelector("#position");
+    const departmentInput = form.querySelector("#department");
+    const hireDateInput = form.querySelector("#hire-date");
 
-    if (!id || !userEmail || !position || !department || !hireDate) {
-      alert("Fill all fields.");
+    const id = idInput.value.trim();
+    const userEmail = userEmailInput.value.trim();
+    const position = positionInput.value.trim();
+    const department = departmentInput.value.trim();
+    const hireDate = hireDateInput.value;
+
+    clearFormValidation(form);
+
+    let hasError = false;
+
+    if (!id) {
+      showFieldError(idInput, "Employee ID is required.");
+      hasError = true;
+    }
+
+    if (!userEmail) {
+      showFieldError(userEmailInput, "User email is required.");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
+      showFieldError(userEmailInput, "Please enter a valid email address.");
+      hasError = true;
+    }
+
+    if (!position) {
+      showFieldError(positionInput, "Position is required.");
+      hasError = true;
+    }
+
+    if (!department) {
+      showFieldError(departmentInput, "Department is required.");
+      hasError = true;
+    }
+
+    if (!hireDate) {
+      showFieldError(hireDateInput, "Hire date is required.");
+      hasError = true;
+    }
+
+    if (hasError) {
+      showToast("Please fill all required fields.", "error");
       return;
     }
+
     const userExists = window.db.accounts.find((a) => a.email === userEmail);
     if (!userExists) {
-      alert("User email does not exist.");
+      showFieldError(userEmailInput, "User email does not exist in accounts.");
+      showToast("User email does not exist.", "error");
       return;
     }
 
-    const editIdx = form.dataset.editIdx;
-    if (editIdx !== undefined) {
-      window.db.employees[editIdx] = {
-        id,
-        userEmail,
-        position,
-        department,
-        hireDate,
-      };
-      delete form.dataset.editIdx;
-    } else {
-      window.db.employees.push({
-        id,
-        userEmail,
-        position,
-        department,
-        hireDate,
-      });
-    }
-    saveToStorage();
-    renderEmployeesTable();
-    form.reset();
+    const submitBtn = form.querySelector('button[type="submit"]');
+    setLoading(submitBtn, true);
+
+    setTimeout(() => {
+      const editIdx = form.dataset.editIdx;
+      if (editIdx !== undefined) {
+        window.db.employees[editIdx] = {
+          id,
+          userEmail,
+          position,
+          department,
+          hireDate,
+        };
+        delete form.dataset.editIdx;
+        showToast("Employee updated successfully!", "success");
+      } else {
+        window.db.employees.push({
+          id,
+          userEmail,
+          position,
+          department,
+          hireDate,
+        });
+        showToast("Employee added successfully!", "success");
+      }
+      saveToStorage();
+      renderEmployeesTable();
+      form.reset();
+      clearFormValidation(form);
+      setLoading(submitBtn, false);
+    }, 500);
   });
 }
 
@@ -486,6 +727,7 @@ function setupLogout() {
     localStorage.removeItem("auth_token");
     setAuthState(false);
     updateNavbarUser();
+    showToast("You have been logged out.", "info");
     navigateTo("#/");
   });
 }
@@ -494,25 +736,65 @@ function setupLogin() {
   const loginBtn = document.querySelector("#login .btn-primary");
   loginBtn.addEventListener("click", () => {
     const section = document.getElementById("login");
-    const email = section.querySelector("#email").value.trim();
-    const password = section.querySelector("#password").value.trim();
+    const emailInput = section.querySelector("#email");
+    const passwordInput = section.querySelector("#password");
 
-    const user = window.db.accounts.find(
-      (acc) =>
-        acc.email === email &&
-        acc.password === password &&
-        acc.verified === true,
-    );
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-    if (!user) {
-      alert("Invalid credentials or email not verified.");
+    clearFormValidation(section);
+
+    let hasError = false;
+
+    if (!email) {
+      showFieldError(emailInput, "Email is required.");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showFieldError(emailInput, "Please enter a valid email address.");
+      hasError = true;
+    }
+
+    if (!password) {
+      showFieldError(passwordInput, "Password is required.");
+      hasError = true;
+    }
+
+    if (hasError) {
+      showToast("Please fix the errors in the form.", "error");
       return;
     }
 
-    localStorage.setItem("auth_token", user.email);
-    setAuthState(true, user);
-    updateNavbarUser();
-    navigateTo("#/profile");
+    setLoading(loginBtn, true);
+
+    setTimeout(() => {
+      const user = window.db.accounts.find(
+        (acc) =>
+          acc.email === email &&
+          acc.password === password &&
+          acc.verified === true,
+      );
+
+      if (!user) {
+        setLoading(loginBtn, false);
+        showFieldError(
+          emailInput,
+          "Invalid credentials or email not verified.",
+        );
+        showFieldError(
+          passwordInput,
+          "Invalid credentials or email not verified.",
+        );
+        showToast("Invalid credentials or email not verified.", "error");
+        return;
+      }
+
+      localStorage.setItem("auth_token", user.email);
+      setAuthState(true, user);
+      updateNavbarUser();
+      setLoading(loginBtn, false);
+      showToast(`Welcome back, ${user.firstName}!`, "success");
+      navigateTo("#/profile");
+    }, 800);
   });
 }
 
@@ -620,28 +902,34 @@ function setupRequests() {
     }
 
     if (!items.length) {
-      alert("Please add at least one valid item.");
+      showToast("Please add at least one valid item.", "warning");
       return;
     }
 
-    const newRequest = {
-      type,
-      items,
-      status: "Pending",
-      date: new Date().toLocaleDateString(),
-      employeeEmail: currentUser.email,
-    };
+    setLoading(submitBtn, true);
 
-    window.db.requests.push(newRequest);
-    saveToStorage();
+    setTimeout(() => {
+      const newRequest = {
+        type,
+        items,
+        status: "Pending",
+        date: new Date().toLocaleDateString(),
+        employeeEmail: currentUser.email,
+      };
 
-    renderUserRequests();
+      window.db.requests.push(newRequest);
+      saveToStorage();
 
-    const modal = bootstrap.Modal.getInstance(
-      document.getElementById("newRequestModal"),
-    );
-    modal.hide();
+      renderUserRequests();
 
-    resetItems();
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("newRequestModal"),
+      );
+      modal.hide();
+
+      resetItems();
+      setLoading(submitBtn, false);
+      showToast("Request submitted successfully!", "success");
+    }, 500);
   });
 }

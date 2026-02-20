@@ -1,363 +1,527 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
     <title>Full-Stack App (Student Build)</title>
-</head>
-<body class="not-authenticated">
+  </head>
+  <body class="not-authenticated">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a href="#/" class="navbar-brand">Full-Stack App</a>
+      <div class="container-fluid">
+        <a href="#/" class="navbar-brand"
+          >Full-Stack App (Emmanuel M. Andrade)</a
+        >
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item role-logged-out">
-                    <a href="#/login" class="nav-link">Login</a>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item role-logged-out">
+              <a href="#/login" class="nav-link">Login</a>
+            </li>
+            <li class="nav-item role-logged-out">
+              <a href="#/register" class="nav-link">Register</a>
+            </li>
+            <li class="nav-item dropdown role-logged-in">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="userDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span id="nav-username">User</span>
+              </a>
+
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="userDropdown"
+              >
+                <li class="role-admin">
+                  <a class="dropdown-item" href="#/employees-admin"
+                    >Employees</a
+                  >
                 </li>
-                <li class="nav-item role-logged-out">
-                    <a href="#/register" class="nav-link">Register</a>
+                <li class="role-admin">
+                  <a class="dropdown-item" href="#/departments-admin"
+                    >Departments</a
+                  >
                 </li>
-                <li class="nav-item dropdown role-logged-in">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span id="nav-username">User</span>
-                    </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li class="role-admin"><a class="dropdown-item" href="#/employees-admin">Employees</a></li>
-                <li class="role-admin"><a class="dropdown-item" href="#/departments-admin">Departments</a></li>
-                <li class="role-admin"><a class="dropdown-item" href="#/accounts-admin">Accounts</a></li>
+                <li class="role-admin">
+                  <a class="dropdown-item" href="#/accounts-admin">Accounts</a>
+                </li>
                 <li><a class="dropdown-item" href="#/profile">Profile</a></li>
-                <li><a class="dropdown-item" href="#/requests-user">My Requests</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#" id="dropdown-logout">Logout</a></li>
-            </ul>
-        </ul>
+                <li>
+                  <a class="dropdown-item" href="#/requests-user"
+                    >My Requests</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="#" id="dropdown-logout"
+                    >Logout</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
-    </div>
+      </div>
     </nav>
-    
+
     <main>
-        <section id="home" class="page active">
+      <section id="home" class="page active">
         <div class="below-navbar">
-            <h1>Welcome to Full-Stack App</h1>
-            <p class="below-details">
-                A static prototype before backend integration. Simulates:
+          <h1>Welcome to Full-Stack App</h1>
+          <p class="below-details">
+            A static prototype before backend integration. Simulates:
+          </p>
+
+          <ul>
+            <li>Email registration + fake verification</li>
+            <li>Login with JWT-like token simulation</li>
+            <li>Role-based UI (Admin/User)</li>
+            <li>CRUD for Employees, Departments, Requests</li>
+          </ul>
+
+          <div class="alert alert-primary" role="alert">
+            Note: All data is stored in localStorage. Refresh to reset.
+          </div>
+
+          <a href="#/register" class="btn btn-primary">Get Started!</a>
+        </div>
+      </section>
+
+      <section id="register" class="page">
+        <div class="register-page">
+          <h2>Register Account</h2>
+          <div class="mb-3">
+            <label for="first-name" class="form-label">First Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="first-name"
+              placeholder="First Name"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="last-name" class="form-label">Last Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="last-name"
+              placeholder="Last Name"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              placeholder="Email Address"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              placeholder="Password"
+            />
+          </div>
+          <button type="button" class="btn btn-success">Sign Up</button>
+          <button type="button" class="btn btn-outline-dark">Cancel</button>
+        </div>
+      </section>
+
+      <section id="verify-email" class="page">
+        <div class="register-page">
+          <h2>Verify your Email</h2>
+          <h3>For demo purposes, click below to simulate verification:</h3>
+          <div class="alert alert-primary" role="alert">
+            A verification link has been sent to.
+          </div>
+          <button type="button" class="btn btn-success" id="verify-btn">
+            Simulate Email Verification
+          </button>
+        </div>
+      </section>
+
+      <section id="login" class="page">
+        <div class="login-page">
+          <h2>Login</h2>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              placeholder="Email Address"
+            />
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              placeholder="Password"
+            />
+            <div class="login-button">
+              <button type="button" class="btn btn-primary">Login</button>
+              <button type="button" class="btn btn-outline-dark">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="profile" class="page">
+        <div class="profile-page">
+          <h2>My Profile</h2>
+          <div class="profile-box">
+            <h3>Admin User</h3>
+            <p>
+              Email:<br />Role:<br />
+              <button type="button" class="btn btn-outline-primary">
+                Edit Profile
+              </button>
             </p>
-
-            <ul>
-                <li>Email registration + fake verification</li>
-                <li>Login with JWT-like token simulation</li>
-                <li>Role-based UI (Admin/User)</li>
-                <li>CRUD for Employees, Departments, Requests</li>
-            </ul>
-
-            <div class="alert alert-primary" role="alert">
-                Note: All data is stored in localStorage. Refresh to reset.
-            </div>
-
-            <button type="button" class="btn btn-primary">Get Started!</button>
+          </div>
         </div>
-        </section>
+      </section>
 
-        <section id="register" class="page">
-            <div class ="register-page">
-                <h2>Register Account</h2>
-                <div class="mb-3">
-                    <label for="first-name" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="first-name" placeholder="First Name">
-                </div>
-                <div class="mb-3">
-                    <label for="last-name" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="last-name" placeholder="Last Name">
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Email Address">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Password">
-                </div>
-                <button type="button" class="btn btn-success">Sign Up</button>
-                <button type="button" class="btn btn-outline-dark">Cancel</button>
-            </div>
-        </section>
+      <section id="employees-admin" class="page">
+        <div class="employee-page">
+          <div class="header-row">
+            <h2>Employees</h2>
+            <button type="button" class="btn btn-success" id="employee-btn">
+              + Add Employee
+            </button>
+          </div>
 
-        <section id="verify-email" class="page">
-            <div class="register-page">
-                <h2>Verify your Email</h2>
-                <h3>For demo purposes, click below to simulate verification:</h3>
-                <div class="alert alert-primary" role="alert">
-                    A verification link has been sent to.
-                </div>
-                <button type="button" class="btn btn-success" id="verify-btn">Simulate Email Verification</button>
-            </div>
-        </section>
-
-        <section id="login" class="page">
-            <div class="login-page">
-                <h2>Login</h2>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Email Address">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Password">
-                    <div class="login-button">
-                        <button type="button" class="btn btn-primary">Login</button>
-                        <button type="button" class="btn btn-outline-dark">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="profile" class="page">
-            <div class="profile-page">
-                <h2>My Profile</h2>
-                <div class="profile-box">
-                    <h3>Admin User</h3>
-                    <p>Email:<br>
-                        Role:<br>
-                    <button type="button" class="btn btn-outline-primary">Edit Profile</button>                  </p>
-                </div>
-            </div>
-        </section>
-
-        <section id="employees-admin" class="page">
-            <div class="employee-page">
-                <div class="header-row">
-                    <h2>Employees</h2>
-                    <button type="button" class="btn btn-success" id="employee-btn">+ Add Employee</button>
-            </div>
-
-        <table class="table table-striped mt-3">
-            <thead>
+          <div class="table-responsive">
+            <table class="table table-striped mt-3">
+              <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Dept</th>
-                    <th>Actions</th>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Position</th>
+                  <th>Dept</th>
+                  <th>Actions</th>
                 </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
                 <tr>
-                    <td colspan="5" class="text-center">No employees.</td>
+                  <td colspan="5" class="text-center">No employees.</td>
                 </tr>
-            </tbody>
-        </table>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="card mt-4">
-            <div class="card-header">
-                Add/Edit Employee
-            </div>
+          <div class="card mt-4">
+            <div class="card-header">Add/Edit Employee</div>
             <div class="card-body">
-                <form id="employee-form">
-                    <div class="mb-3">
-                        <label for="employee-id" class="form-label">Employee ID</label>
-                        <input type="text" class="form-control" id="employee-id" placeholder="Enter Employee ID">
-                    </div>
-                    <div class="mb-3">
-                        <label for="user-email" class="form-label">User Email</label>
-                        <input type="email" class="form-control" id="user-email" placeholder="Enter Email">
-                    </div>
-                    <div class="mb-3">
-                        <label for="position" class="form-label">Position</label>
-                        <input type="text" class="form-control" id="position" placeholder="Enter Position">
-                    </div>
-                    <div class="mb-3">
-                        <label for="department" class="form-label">Department</label>
-                        <input type="text" class="form-control" id="department" placeholder="Enter Department" value="Engineering">
-                    </div>
-                    <div class="mb-3">
-                        <label for="hire-date" class="form-label">Hire Date</label>
-                        <input type="date" class="form-control" id="hire-date">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-secondary">Cancel</button>
-                </form>
+              <form id="employee-form">
+                <div class="mb-3">
+                  <label for="employee-id" class="form-label"
+                    >Employee ID</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="employee-id"
+                    placeholder="Enter Employee ID"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="user-email" class="form-label">User Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="user-email"
+                    placeholder="Enter Email"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="position" class="form-label">Position</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="position"
+                    placeholder="Enter Position"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="department" class="form-label">Department</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="department"
+                    placeholder="Enter Department"
+                    value="Engineering"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="hire-date" class="form-label">Hire Date</label>
+                  <input type="date" class="form-control" id="hire-date" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary">Cancel</button>
+              </form>
             </div>
+          </div>
         </div>
-    </div>
-</section>
-   
-    <section id="departments-admin" class="page">
-    <div class="department-page">
-        <div class="header-row">
+      </section>
+
+      <section id="departments-admin" class="page">
+        <div class="department-page">
+          <div class="header-row">
             <h2>Departments</h2>
-            <button type="button" class="btn btn-success">+ Add Department</button>
+            <button type="button" class="btn btn-success">
+              + Add Department
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-striped mt-3">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Engineering</td>
+                  <td>Software team</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>HR</td>
+                  <td>Human Resources</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+      </section>
 
-        <table class="table table-striped mt-3">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Engineering</td>
-                    <td>Software team</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>HR</td>
-                    <td>Human Resources</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</section>
-
-
-<section id="accounts-admin" class="page">
-    <div class="account-page">
-        <div class="header-row">
+      <section id="accounts-admin" class="page">
+        <div class="account-page">
+          <div class="header-row">
             <h2>Accounts</h2>
             <button type="button" class="btn btn-success">+ Add Account</button>
-        </div>
+          </div>
 
-        <table class="table table-striped mt-3">
-            <thead>
+          <div class="table-responsive">
+            <table class="table table-striped mt-3">
+              <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Verified</th>
-                    <th>Actions</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Verified</th>
+                  <th>Actions</th>
                 </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
                 <tr>
-                    <td>Admin User</td>
-                    <td>admin@example.com</td>
-                    <td>Admin</td>
-                    <td>
-                        <span class="badge bg-success">✔</span>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary">Edit</button>
-                        <button class="btn btn-sm btn-outline-warning">Reset Password</button>
-                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                    </td>
+                  <td>Admin User</td>
+                  <td>admin@example.com</td>
+                  <td>Admin</td>
+                  <td><span class="badge bg-success">✔</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                    <button class="btn btn-sm btn-outline-warning">
+                      Reset Password
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger">
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-            </tbody>
-        </table>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="card mt-4">
+          <div class="card mt-4">
             <div class="card-header">Add/Edit Account</div>
             <div class="card-body">
-                <form id="account-form">
-                    <div class="mb-3">
-                        <label class="form-label">First Name</label>
-                        <input type="text" class="form-control" placeholder="First Name">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" class="form-control" placeholder="Last Name">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" placeholder="Email">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-control" placeholder="Password">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Role</label>
-                        <select class="form-select">
-                            <option>User</option>
-                            <option>Admin</option>
-                        </select>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input type="checkbox" class="form-check-input" id="verified">
-                        <label class="form-check-label" for="verified">Verified</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-secondary">Cancel</button>
-                </form>
+              <form id="account-form">
+                <div class="mb-3">
+                  <label class="form-label">First Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="First Name"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Last Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Last Name"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    placeholder="Email"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    placeholder="Password"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Role</label>
+                  <select class="form-select">
+                    <option>User</option>
+                    <option>Admin</option>
+                  </select>
+                </div>
+                <div class="form-check mb-3">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="verified"
+                  />
+                  <label class="form-check-label" for="verified"
+                    >Verified</label
+                  >
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary">Cancel</button>
+              </form>
             </div>
+          </div>
         </div>
-    </div>
-</section>
+      </section>
 
-<section id="requests-user" class="page">
-    <div class="employee-page">
-    <div class="header-row">
-        <h2>My Requests</h2>
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newRequestModal">
-            + New Request
-        </button>
-    </div>
+      <section id="requests-user" class="page">
+        <div class="employee-page">
+          <div class="header-row">
+            <h2>My Requests</h2>
+            <button
+              class="btn btn-success"
+              data-bs-toggle="modal"
+              data-bs-target="#newRequestModal"
+            >
+              + New Request
+            </button>
+          </div>
 
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Items</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="requests-table-body">
-        </tbody>
-    </table>
-</div>
-</section>
+          <div class="table-responsive">
+            <table class="table table-striped mt-3">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Items</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="requests-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-<div class="modal fade" id="newRequestModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
+      <div class="modal fade" id="newRequestModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">New Request</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Type</label>
+                <select class="form-select" id="request-type">
+                  <option value="Equipment">Equipment</option>
+                  <option value="Leave">Leave</option>
+                  <option value="Resources">Resources</option>
+                </select>
+              </div>
 
-      <div class="modal-header">
-        <h5 class="modal-title">New Request</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              <label class="form-label">Items</label>
+              <div id="items-container"></div>
+
+              <button
+                type="button"
+                class="btn btn-outline-success btn-sm mb-3"
+                id="add-item-btn"
+              >
+                + Add Item
+              </button>
+
+              <div class="text-end">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="submit-request"
+                >
+                  Submit Request
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </main>
 
-      <div class="modal-body">
+    <div
+      class="toast-container position-fixed top-0 end-0 p-3"
+      id="toast-container"
+    ></div>
 
-  <div class="mb-3">
-    <label class="form-label">Type</label>
-    <select class="form-select" id="request-type">
-      <option value="Equipment">Equipment</option>
-      <option value="Leave">Leave</option>
-      <option value="Resources">Resources</option>
-    </select>
-  </div>
-
-  <label class="form-label">Items</label>
-
-  <div id="items-container"></div>
-
-  <button type="button" class="btn btn-outline-success btn-sm mb-3" id="add-item-btn">
-    + Add Item
-  </button>
-
-  <div class="text-end">
-    <button type="button" class="btn btn-primary" id="submit-request">
-      Submit Request
-    </button>
-  </div>
-
-</div>
-      </div>
-    </div>
-  </div>
-</div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
